@@ -67,14 +67,22 @@
 
             <!-- Coluna de Times Gerados -->
             <div class="bg-white p-6 rounded-2xl shadow-lg">
-                <div class="flex justify-between items-center mb-4 border-b pb-2">
+                <div class="flex justify-between items-center mb-4 border-b pb-2 flex-wrap gap-2">
                     <h2 class="text-2xl font-semibold text-slate-700">Times Sorteados</h2>
-                    <button id="generate-pdf-btn" class="flex items-center bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 transition text-sm hidden">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                        </svg>
-                        Gerar PDF
-                    </button>
+                    <div class="flex gap-2">
+                        <button id="share-whatsapp-btn" class="flex items-center bg-emerald-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-emerald-600 transition text-sm hidden">
+                           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="currentColor" viewBox="0 0 16 16">
+                                <path d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.933 7.933 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.898 7.898 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.729.729 0 0 0-.529.247c-.182.198-.691.677-.691 1.654 0 .977.71 1.916.81 2.049.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z"/>
+                            </svg>
+                            WhatsApp
+                        </button>
+                        <button id="generate-pdf-btn" class="flex items-center bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 transition text-sm hidden">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                            </svg>
+                            Gerar PDF
+                        </button>
+                    </div>
                 </div>
                 <div id="teams-output">
                      <!-- Os times sorteados serão inseridos aqui -->
@@ -90,6 +98,7 @@
             let teams = [];
             let leftovers = [];
             let selectedGoalkeepers = [];
+            let teamWithBall = -1; // -1 significa que nenhum time foi escolhido
 
             // --- DOM ELEMENTS ---
             const addPlayerForm = document.getElementById('add-player-form');
@@ -99,6 +108,7 @@
             const generateTeamsBtn = document.getElementById('generate-teams-btn');
             const clearTeamsBtn = document.getElementById('clear-teams-btn');
             const generatePdfBtn = document.getElementById('generate-pdf-btn');
+            const shareWhatsappBtn = document.getElementById('share-whatsapp-btn');
             const messageBox = document.getElementById('message-box');
             
             // --- HELPER FUNCTIONS ---
@@ -107,10 +117,8 @@
                 messageBox.classList.remove('bg-red-500', 'bg-green-500', 'opacity-0', '-translate-y-10');
                 messageBox.classList.add(isError ? 'bg-red-500' : 'bg-green-500');
                 
-                // Show message
                 messageBox.classList.add('opacity-100', 'translate-y-0');
 
-                // Hide message after 3 seconds
                 setTimeout(() => {
                     messageBox.classList.remove('opacity-100', 'translate-y-0');
                     messageBox.classList.add('opacity-0', '-translate-y-10');
@@ -145,11 +153,13 @@
                     teamsOutputContainer.innerHTML = `<div class="text-center py-10 text-slate-500"><p>Os times aparecerão aqui após o sorteio.</p></div>`;
                     clearTeamsBtn.classList.add('hidden');
                     generatePdfBtn.classList.add('hidden');
+                    shareWhatsappBtn.classList.add('hidden');
                     return;
                 }
                 
                 clearTeamsBtn.classList.remove('hidden');
                 generatePdfBtn.classList.remove('hidden');
+                shareWhatsappBtn.classList.remove('hidden');
 
                 const container = document.createElement('div');
                 container.className = 'space-y-6';
@@ -165,12 +175,23 @@
                     goalkeepersHtml += `</ul></div>`;
                     container.innerHTML += goalkeepersHtml;
                 }
+                
+                if (teams.length >= 2) {
+                    const observationHtml = `
+                        <div class="bg-blue-50 border border-blue-200 text-blue-800 p-3 rounded-lg text-sm text-center fade-in">
+                            <p><span class="font-semibold">Observação:</span> O Time 1 joga contra o Time 2 primeiro.</p>
+                        </div>
+                    `;
+                    container.innerHTML += observationHtml;
+                }
+
 
                 if (teams.length > 0) {
                     teams.forEach((team, index) => {
+                        const startsWithBall = index === teamWithBall ? ' <span class="text-base" title="Inicia com a bola">⚽</span>' : '';
                         let teamHtml = `
                             <div class="bg-slate-50 border border-slate-200 p-4 rounded-lg fade-in">
-                                <h3 class="font-bold text-xl text-indigo-700 mb-3">Time ${index + 1}</h3>
+                                <h3 class="font-bold text-xl text-indigo-700 mb-3 flex items-center gap-2">Time ${index + 1} ${startsWithBall}</h3>
                                 <ul class="space-y-2">`;
                         team.forEach(player => {
                             teamHtml += `<li class="flex items-center gap-2 p-2 rounded">${player.name}</li>`;
@@ -203,7 +224,6 @@
                     return;
                 }
 
-                // Normaliza o nome para comparação: remove espaços e converte para minúsculas
                 const normalizedNewName = name.replace(/\s+/g, '').toLowerCase();
                 const isDuplicate = players.some(player => player.name.replace(/\s+/g, '').toLowerCase() === normalizedNewName);
 
@@ -243,7 +263,6 @@
                     return;
                 }
 
-                // A regra do número par se aplica apenas para 10 ou menos jogadores.
                 if (players.length <= 10 && players.length % 2 !== 0) {
                     showMessage('Para 10 jogadores ou menos, o número total deve ser par.');
                     return;
@@ -254,12 +273,11 @@
                 selectedGoalkeepers = shuffledPlayers.slice(0, 2);
                 const outfieldPool = shuffledPlayers.slice(2);
                 
-                // Reset teams and leftovers
                 teams = [];
                 leftovers = [];
+                teamWithBall = -1;
 
                 if (outfieldPool.length > 0) {
-                    // Regra para 10 ou menos jogadores no total
                     if (players.length <= 10) {
                         const numTeams = 2;
                         teams = Array.from({ length: numTeams }, () => []);
@@ -267,7 +285,6 @@
                             teams[index % numTeams].push(player);
                         });
                     } 
-                    // Regra para mais de 10 jogadores no total
                     else {
                         const playersPerTeam = 4;
                         const numTeams = Math.floor(outfieldPool.length / playersPerTeam);
@@ -286,6 +303,12 @@
                     }
                 }
                 
+                if (teams.length >= 2) {
+                    teamWithBall = Math.floor(Math.random() * 2); 
+                } else if (teams.length === 1) {
+                    teamWithBall = 0;
+                }
+
                 renderTeams();
             };
 
@@ -293,7 +316,45 @@
                 teams = [];
                 leftovers = [];
                 selectedGoalkeepers = [];
+                teamWithBall = -1;
                 renderTeams();
+            };
+
+            const handleShareWhatsApp = () => {
+                let message = '*Times de Futsal Sorteados!*\n\n';
+
+                if (selectedGoalkeepers.length > 0) {
+                    message += '*🧤 Goleiros Sorteados*\n';
+                    selectedGoalkeepers.forEach(p => {
+                        message += `- ${p.name}\n`;
+                    });
+                    message += '\n';
+                }
+
+                if (teams.length >= 2) {
+                    message += '_Observação: O Time 1 joga contra o Time 2 primeiro._\n\n';
+                }
+                
+                if (teams.length > 0) {
+                    teams.forEach((team, index) => {
+                        const startsWithBall = index === teamWithBall ? ' (Inicia com a bola) ⚽' : '';
+                        message += `*Time ${index + 1}${startsWithBall}*\n`;
+                        team.forEach(p => {
+                            message += `- ${p.name}\n`;
+                        });
+                        message += '\n';
+                    });
+                }
+
+                if (leftovers.length > 0) {
+                    message += '*Jogadores Fora*\n';
+                    leftovers.forEach(p => {
+                        message += `- ${p.name}\n`;
+                    });
+                }
+
+                const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
+                window.open(whatsappUrl, '_blank');
             };
 
             const handleGeneratePdf = () => {
@@ -309,8 +370,7 @@
                 const margin = 14;
                 let y = 0;
 
-                // --- Cabeçalho do PDF ---
-                doc.setFillColor(31, 41, 55); // Cinza escuro
+                doc.setFillColor(31, 41, 55);
                 doc.rect(0, 0, pageWidth, 30, 'F');
                 doc.setFontSize(20);
                 doc.setTextColor(255, 255, 255);
@@ -324,7 +384,6 @@
                 
                 y = 45;
 
-                // --- Função para desenhar uma tabela para a seção ---
                 const drawTable = (title, players, headerColor) => {
                     if (!players || players.length === 0) return;
                     
@@ -338,7 +397,6 @@
                         y = 20;
                     }
 
-                    // Cabeçalho da Tabela
                     doc.setFillColor(...headerColor);
                     doc.setDrawColor(226, 232, 240);
                     doc.rect(margin, y, pageWidth - (margin * 2), tableHeaderHeight, 'FD');
@@ -348,7 +406,6 @@
                     doc.text(title, margin + 3, y + 8.5);
                     y += tableHeaderHeight;
 
-                    // Corpo da Tabela
                     doc.setFont(undefined, 'normal');
                     doc.setFontSize(12);
                     doc.setTextColor(55, 65, 81);
@@ -356,22 +413,34 @@
                     players.forEach((player, index) => {
                         const rowY = y + (index * rowHeight);
                         doc.setDrawColor(226, 232, 240);
-                        doc.line(margin, rowY + rowHeight, pageWidth - margin, rowY + rowHeight); // Linha da linha
+                        doc.line(margin, rowY + rowHeight, pageWidth - margin, rowY + rowHeight);
                         doc.text(player.name, margin + 3, rowY + 7);
                     });
                     
-                    doc.rect(margin, y, pageWidth - (margin * 2), tableBodyHeight, 'S'); // Borda externa
-                    y += tableBodyHeight + 15; // Espaço após a tabela
+                    doc.rect(margin, y, pageWidth - (margin * 2), tableBodyHeight, 'S');
+                    y += tableBodyHeight + 15;
                 };
 
-                // --- Desenhar as seções como tabelas ---
-                drawTable("Goleiros Sorteados", selectedGoalkeepers, [251, 191, 36]); // Amarelo
-                teams.forEach((team, index) => {
-                    drawTable(`Time ${index + 1}`, team, [79, 70, 229]); // Indigo
-                });
-                drawTable("Jogadores Fora", leftovers, [107, 114, 128]); // Cinza
+                drawTable("Goleiros Sorteados", selectedGoalkeepers, [251, 191, 36]);
+                
+                if (teams.length >= 2) {
+                    y += 2;
+                    doc.setFontSize(10);
+                    doc.setTextColor(107, 114, 128);
+                    doc.setFont(undefined, 'italic');
+                    doc.text("Observação: O Time 1 joga contra o Time 2 primeiro.", margin, y);
+                    y += 10;
+                }
 
-                // --- Rodapé ---
+                teams.forEach((team, index) => {
+                    let title = `Time ${index + 1}`;
+                    if (index === teamWithBall) {
+                        title += " (Inicia com a bola)";
+                    }
+                    drawTable(title, team, [79, 70, 229]);
+                });
+                drawTable("Jogadores Fora", leftovers, [107, 114, 128]);
+
                 for (let i = 1; i <= doc.internal.getNumberOfPages(); i++) {
                     doc.setPage(i);
                     doc.setFontSize(8);
@@ -388,6 +457,7 @@
             generateTeamsBtn.addEventListener('click', handleGenerateTeams);
             clearTeamsBtn.addEventListener('click', handleClearTeams);
             generatePdfBtn.addEventListener('click', handleGeneratePdf);
+            shareWhatsappBtn.addEventListener('click', handleShareWhatsApp);
 
             renderPlayers();
             renderTeams();
