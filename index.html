@@ -169,9 +169,14 @@
                         <div class="bg-amber-50 border border-amber-200 p-4 rounded-lg fade-in">
                             <h3 class="font-bold text-xl text-amber-800 mb-3">🧤 Goleiros Sorteados</h3>
                             <ul class="space-y-2">`;
-                    selectedGoalkeepers.forEach(player => {
-                        goalkeepersHtml += `<li class="p-2 rounded font-semibold">${player.name}</li>`;
-                    });
+                    if (teams.length >= 2) {
+                        goalkeepersHtml += `<li class="p-2 rounded font-semibold">${selectedGoalkeepers[0].name} (Time 1)</li>`;
+                        goalkeepersHtml += `<li class="p-2 rounded font-semibold">${selectedGoalkeepers[1].name} (Time 2)</li>`;
+                    } else {
+                        selectedGoalkeepers.forEach(player => {
+                            goalkeepersHtml += `<li class="p-2 rounded font-semibold">${player.name}</li>`;
+                        });
+                    }
                     goalkeepersHtml += `</ul></div>`;
                     container.innerHTML += goalkeepersHtml;
                 }
@@ -184,7 +189,6 @@
                     `;
                     container.innerHTML += observationHtml;
                 }
-
 
                 if (teams.length > 0) {
                     teams.forEach((team, index) => {
@@ -271,6 +275,7 @@
                 const shuffledPlayers = shuffleArray([...players]);
                 
                 selectedGoalkeepers = shuffledPlayers.slice(0, 2);
+                shuffleArray(selectedGoalkeepers); // Sorteia a ordem dos goleiros para a atribuição
                 const outfieldPool = shuffledPlayers.slice(2);
                 
                 teams = [];
@@ -325,9 +330,14 @@
 
                 if (selectedGoalkeepers.length > 0) {
                     message += '*🧤 Goleiros Sorteados*\n';
-                    selectedGoalkeepers.forEach(p => {
-                        message += `- ${p.name}\n`;
-                    });
+                    if (teams.length >= 2) {
+                        message += `- ${selectedGoalkeepers[0].name} (Time 1)\n`;
+                        message += `- ${selectedGoalkeepers[1].name} (Time 2)\n`;
+                    } else {
+                        selectedGoalkeepers.forEach(p => {
+                            message += `- ${p.name}\n`;
+                        });
+                    }
                     message += '\n';
                 }
 
@@ -420,8 +430,17 @@
                     doc.rect(margin, y, pageWidth - (margin * 2), tableBodyHeight, 'S');
                     y += tableBodyHeight + 15;
                 };
-
-                drawTable("Goleiros Sorteados", selectedGoalkeepers, [251, 191, 36]);
+                
+                let goalkeepersForPdf = [];
+                if (teams.length >= 2) {
+                    goalkeepersForPdf = [
+                        { name: `${selectedGoalkeepers[0].name} (Time 1)` },
+                        { name: `${selectedGoalkeepers[1].name} (Time 2)` }
+                    ];
+                } else {
+                    goalkeepersForPdf = selectedGoalkeepers;
+                }
+                drawTable("Goleiros Sorteados", goalkeepersForPdf, [251, 191, 36]); // Amarelo
                 
                 if (teams.length >= 2) {
                     y += 2;
