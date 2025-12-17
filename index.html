@@ -470,6 +470,29 @@
                 doc.save('times_futsal.pdf');
             };
 
+            // --- LOAD PLAYERS FROM JSON ---
+            const loadPlayersFromJson = async () => {
+                try {
+                    const response = await fetch('./dados/jogadores.json');
+                    if (!response.ok) {
+                        throw new Error('Não foi possível carregar os jogadores');
+                    }
+                    const jsonPlayers = await response.json();
+                    
+                    // Converter os dados do JSON para o formato da aplicação
+                    players = jsonPlayers.map(p => ({
+                        id: p.id,
+                        name: p.nome
+                    }));
+                    
+                    renderPlayers();
+                    showMessage('Jogadores carregados com sucesso!', false);
+                } catch (error) {
+                    console.error('Erro ao carregar jogadores:', error);
+                    showMessage('Não foi possível carregar a lista de jogadores.', true);
+                }
+            };
+
             // --- INITIALIZATION ---
             addPlayerForm.addEventListener('submit', handleAddPlayer);
             playersListContainer.addEventListener('click', handleRemovePlayer);
@@ -478,7 +501,9 @@
             generatePdfBtn.addEventListener('click', handleGeneratePdf);
             shareWhatsappBtn.addEventListener('click', handleShareWhatsApp);
 
-            renderPlayers();
+            // Carregar jogadores do JSON
+            loadPlayersFromJson();
+            
             renderTeams();
         });
     </script>
