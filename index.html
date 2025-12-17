@@ -130,9 +130,19 @@
                 playersListContainer.innerHTML = '';
                 players.forEach(player => {
                     const playerDiv = document.createElement('div');
-                    playerDiv.className = 'flex items-center justify-between bg-slate-50 p-3 rounded-lg fade-in';
+                    playerDiv.className = `flex items-center justify-between p-3 rounded-lg fade-in ${
+                        player.present ? 'bg-slate-50' : 'bg-slate-100 opacity-60'
+                    }`;
                     playerDiv.innerHTML = `
-                        <span class="font-medium text-slate-800 flex items-center gap-2">${player.name}</span>
+                        <div class="flex items-center gap-3">
+                            <input 
+                                type="checkbox" 
+                                data-id="${player.id}" 
+                                class="presence-checkbox w-5 h-5 text-indigo-600 rounded focus:ring-2 focus:ring-indigo-500 cursor-pointer"
+                                ${player.present ? 'checked' : ''}
+                            />
+                            <span class="font-medium text-slate-800">${player.name}</span>
+                        </div>
                         <div class="flex items-center gap-4">
                             <button data-id="${player.id}" class="remove-player-btn text-slate-400 hover:text-red-500">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -236,7 +246,7 @@
                     return;
                 }
 
-                players.push({ id: Date.now(), name, skill: 3 });
+                players.push({ id: Date.now(), name, skill: 3, present: true });
                 playerNameInput.value = '';
                 renderPlayers();
             };
@@ -248,6 +258,18 @@
                     players = players.filter(p => p.id !== idToRemove);
                     renderPlayers();
                     handleClearTeams();
+                }
+            };
+
+            const handlePresenceChange = (e) => {
+                if (e.target.classList.contains('presence-checkbox')) {
+                    const playerId = parseInt(e.target.dataset.id, 10);
+                    const player = players.find(p => p.id === playerId);
+                    if (player) {
+                        player.present = e.target.checked;
+                        renderPlayers();
+                        handleClearTeams();
+                    }
                 }
             };
             
@@ -290,17 +312,19 @@
             };
 
             const handleGenerateTeams = () => {
-                if (players.length < 2) {
-                    showMessage('É necessário ter pelo menos 2 jogadores.');
+                const presentPlayers = players.filter(p => p.present);
+                
+                if (presentPlayers.length < 2) {
+                    showMessage('É necessário ter pelo menos 2 jogadores presentes.');
                     return;
                 }
 
-                if (players.length <= 10 && players.length % 2 !== 0) {
+                if (presentPlayers.length <= 10 && presentPlayers.length % 2 !== 0) {
                     showMessage('Para 10 jogadores ou menos, o número total deve ser par.');
                     return;
                 }
 
-                const shuffledPlayers = shuffleArray([...players]);
+                const shuffledPlayers = shuffleArray([...presentPlayers]);
                 
                 selectedGoalkeepers = shuffledPlayers.slice(0, 2);
                 shuffleArray(selectedGoalkeepers); // Sorteia a ordem dos goleiros para a atribuição
@@ -311,7 +335,7 @@
                 teamWithBall = -1;
 
                 if (outfieldPool.length > 0) {
-                    if (players.length <= 10) {
+                    if (presentPlayers.length <= 10) {
                         const numTeams = 2;
                         teams = balanceTeamsBySkill(outfieldPool, numTeams);
                     } 
@@ -505,7 +529,8 @@
                     players = jsonPlayers.map(p => ({
                         id: p.id,
                         name: p.nome,
-                        skill: p.habilidade || 3
+                        skill: p.habilidade || 3,
+                        present: p.presenca === 'S'
                     }));
                     
                     renderPlayers();
@@ -519,6 +544,7 @@
             // --- INITIALIZATION ---
             addPlayerForm.addEventListener('submit', handleAddPlayer);
             playersListContainer.addEventListener('click', handleRemovePlayer);
+            playersListContainer.addEventListener('change', handlePresenceChange);
             generateTeamsBtn.addEventListener('click', handleGenerateTeams);
             clearTeamsBtn.addEventListener('click', handleClearTeams);
             generatePdfBtn.addEventListener('click', handleGeneratePdf);
