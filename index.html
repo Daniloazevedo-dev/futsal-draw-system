@@ -236,7 +236,7 @@
                     return;
                 }
 
-                players.push({ id: Date.now(), name });
+                players.push({ id: Date.now(), name, skill: 3 });
                 playerNameInput.value = '';
                 renderPlayers();
             };
@@ -259,6 +259,34 @@
                     [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
                 }
                 return array;
+            };
+
+            const balanceTeamsBySkill = (playersList, numTeams) => {
+                // Ordenar por habilidade (maior para menor)
+                const sortedPlayers = [...playersList].sort((a, b) => b.skill - a.skill);
+                
+                // Criar times vazios
+                const balancedTeams = Array.from({ length: numTeams }, () => []);
+                
+                // Snake draft: distribui alternadamente ida e volta
+                let teamIndex = 0;
+                let direction = 1; // 1 = indo, -1 = voltando
+                
+                sortedPlayers.forEach((player) => {
+                    balancedTeams[teamIndex].push(player);
+                    
+                    // Verificar se chegou nos extremos antes de mover
+                    if (teamIndex === numTeams - 1 && direction === 1) {
+                        direction = -1; // Atingiu o final, volta
+                    } else if (teamIndex === 0 && direction === -1) {
+                        direction = 1; // Atingiu o início, vai
+                    } else {
+                        // Só move se não estiver nos extremos
+                        teamIndex += direction;
+                    }
+                });
+                
+                return balancedTeams;
             };
 
             const handleGenerateTeams = () => {
@@ -285,23 +313,17 @@
                 if (outfieldPool.length > 0) {
                     if (players.length <= 10) {
                         const numTeams = 2;
-                        teams = Array.from({ length: numTeams }, () => []);
-                        outfieldPool.forEach((player, index) => {
-                            teams[index % numTeams].push(player);
-                        });
+                        teams = balanceTeamsBySkill(outfieldPool, numTeams);
                     } 
                     else {
                         const playersPerTeam = 4;
                         const numTeams = Math.floor(outfieldPool.length / playersPerTeam);
                         
                         if (numTeams > 0) {
-                            teams = Array.from({ length: numTeams }, () => []);
                             const playersForTeams = outfieldPool.slice(0, numTeams * playersPerTeam);
                             leftovers = outfieldPool.slice(numTeams * playersPerTeam);
 
-                            playersForTeams.forEach((player, index) => {
-                                teams[index % numTeams].push(player);
-                            });
+                            teams = balanceTeamsBySkill(playersForTeams, numTeams);
                         } else {
                             leftovers = outfieldPool;
                         }
@@ -482,7 +504,8 @@
                     // Converter os dados do JSON para o formato da aplicação
                     players = jsonPlayers.map(p => ({
                         id: p.id,
-                        name: p.nome
+                        name: p.nome,
+                        skill: p.habilidade || 3
                     }));
                     
                     renderPlayers();
