@@ -223,17 +223,6 @@
                     });
                 }
 
-                if (leftovers.length > 0) {
-                     let leftoversHtml = `
-                        <div class="bg-slate-50 border border-slate-200 p-4 rounded-lg fade-in">
-                            <h3 class="font-bold text-xl text-slate-600 mb-3">Jogadores Fora</h3>
-                            <ul class="space-y-2">`;
-                    leftovers.forEach(player => {
-                        leftoversHtml += `<li class="p-2 rounded">${player.name}</li>`;
-                    });
-                    leftoversHtml += `</ul></div>`;
-                    container.innerHTML += leftoversHtml;
-                }
                 teamsOutputContainer.appendChild(container);
             };
 
@@ -379,23 +368,35 @@
                         
                         if (numAdditionalTeams > 0) {
                             const playersForAdditionalTeams = poolForOtherTeams.slice(0, numAdditionalTeams * playersPerTeam);
-                            leftovers = poolForOtherTeams.slice(numAdditionalTeams * playersPerTeam);
+                            const remainingAfterTeams = poolForOtherTeams.slice(numAdditionalTeams * playersPerTeam);
                             
                             const additionalTeams = balanceTeamsBySkill(playersForAdditionalTeams, numAdditionalTeams);
                             teams = [...teams, ...additionalTeams];
+                            
+                            // Se sobrarem jogadores, adicionar como um time extra
+                            if (remainingAfterTeams.length > 0) {
+                                teams.push(remainingAfterTeams);
+                            }
                         } else {
-                            leftovers = poolForOtherTeams;
+                            // Todos formam um único time
+                            teams.push(poolForOtherTeams);
                         }
                     } else {
-                        // Menos de 8 jogadores de linha: apenas 1 time ou jogadores fora
+                        // Menos de 8 jogadores de linha: formar o que for possível e resto vira um time
                         const numTeams = Math.floor(shuffledOutfield.length / playersPerTeam);
                         if (numTeams > 0) {
                             const playersForTeams = shuffledOutfield.slice(0, numTeams * playersPerTeam);
-                            leftovers = shuffledOutfield.slice(numTeams * playersPerTeam);
-                            leftovers = [...leftovers, ...selectedGoalkeepers];
+                            const remainingPlayers = shuffledOutfield.slice(numTeams * playersPerTeam);
                             teams = balanceTeamsBySkill(playersForTeams, numTeams);
+                            
+                            // Adicionar resto + goleiros como um time extra
+                            const extraTeam = [...remainingPlayers, ...selectedGoalkeepers];
+                            if (extraTeam.length > 0) {
+                                teams.push(extraTeam);
+                            }
                         } else {
-                            leftovers = [...shuffledOutfield, ...selectedGoalkeepers];
+                            // Todos formam um único time
+                            teams.push([...shuffledOutfield, ...selectedGoalkeepers]);
                         }
                     }
                 }
@@ -453,13 +454,6 @@
                             message += `- ${p.name}\n`;
                         });
                         message += '\n';
-                    });
-                }
-
-                if (leftovers.length > 0) {
-                    message += '*Jogadores Fora*\n';
-                    leftovers.forEach(p => {
-                        message += `- ${p.name}\n`;
                     });
                 }
 
@@ -567,7 +561,6 @@
                     }
                     drawTable(title, team, [79, 70, 229]);
                 });
-                drawTable("Jogadores Fora", leftovers, [107, 114, 128]);
 
                 for (let i = 1; i <= doc.internal.getNumberOfPages(); i++) {
                     doc.setPage(i);
