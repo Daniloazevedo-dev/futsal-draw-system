@@ -192,9 +192,17 @@
                 }
                 
                 if (teams.length >= 2) {
+                    let observationText = 'O Time 1 joga contra o Time 2 primeiro.';
+                    
+                    if (teams.length > 2) {
+                        observationText += ' Os goleiros são exclusivos para Times 1 e 2, mas podem jogar na linha em outros times.';
+                    } else {
+                        observationText += ' Os goleiros são exclusivos e não jogam na linha.';
+                    }
+                    
                     const observationHtml = `
                         <div class="bg-blue-50 border border-blue-200 text-blue-800 p-3 rounded-lg text-sm text-center fade-in">
-                            <p><span class="font-semibold">Observação:</span> O Time 1 joga contra o Time 2 primeiro.</p>
+                            <p><span class="font-semibold">Observação:</span> ${observationText}</p>
                         </div>
                     `;
                     container.innerHTML += observationHtml;
@@ -283,6 +291,12 @@
                 return array;
             };
 
+            const selectGoalkeepers = (playersList) => {
+                const eligibleGoalkeepers = playersList.filter(p => p.skill >= 2);
+                const shuffled = shuffleArray([...eligibleGoalkeepers]);
+                return shuffled.slice(0, 2);
+            };
+
             const balanceTeamsBySkill = (playersList, numTeams) => {
                 // Ordenar por habilidade (maior para menor)
                 const sortedPlayers = [...playersList].sort((a, b) => b.skill - a.skill);
@@ -319,37 +333,69 @@
                     return;
                 }
 
-                if (presentPlayers.length <= 10 && presentPlayers.length % 2 !== 0) {
-                    showMessage('Para 10 jogadores ou menos, o número total deve ser par.');
+                // Validar goleiros elegíveis
+                const eligibleGoalkeepers = presentPlayers.filter(p => p.skill >= 2);
+                if (eligibleGoalkeepers.length < 2) {
+                    showMessage('É necessário ter pelo menos 2 jogadores com habilidade 2 ou superior para serem goleiros.');
                     return;
                 }
 
-                const shuffledPlayers = shuffleArray([...presentPlayers]);
+                // Selecionar goleiros com restrição de habilidade
+                selectedGoalkeepers = selectGoalkeepers(presentPlayers);
+                const goalkeeperIds = selectedGoalkeepers.map(gk => gk.id);
                 
-                selectedGoalkeepers = shuffledPlayers.slice(0, 2);
-                shuffleArray(selectedGoalkeepers); // Sorteia a ordem dos goleiros para a atribuição
-                const outfieldPool = shuffledPlayers.slice(2);
+                // Pool de jogadores de linha (sem goleiros)
+                const outfieldPlayersExcludingGk = presentPlayers.filter(p => !goalkeeperIds.includes(p.id));
                 
                 teams = [];
                 leftovers = [];
                 teamWithBall = -1;
 
-                if (outfieldPool.length > 0) {
-                    if (presentPlayers.length <= 10) {
-                        const numTeams = 2;
-                        teams = balanceTeamsBySkill(outfieldPool, numTeams);
-                    } 
-                    else {
-                        const playersPerTeam = 4;
-                        const numTeams = Math.floor(outfieldPool.length / playersPerTeam);
+                if (presentPlayers.length <= 10) {
+                    // ≤ 10 jogadores: 2 times sem goleiros
+                    if (outfieldPlayersExcludingGk.length % 2 !== 0) {
+                        showMessage('Para 10 jogadores ou menos, após escolher 2 goleiros, o número de jogadores de linha deve ser par.');
+                        return;
+                    }
+                    const numTeams = 2;
+                    teams = balanceTeamsBySkill(outfieldPlayersExcludingGk, numTeams);
+                } 
+                else {
+                    // > 10 jogadores: Times 1 e 2 sem goleiros, Times 3+ podem ter goleiros
+                    const playersPerTeam = 4;
+                    const shuffledOutfield = shuffleArray([...outfieldPlayersExcludingGk]);
+                    
+                    if (shuffledOutfield.length >= 8) {
+                        // Formar Times 1 e 2 (sem goleiros)
+                        const playersForFirstTwoTeams = shuffledOutfield.slice(0, 8);
+                        const remainingPlayers = shuffledOutfield.slice(8);
                         
+                        teams = balanceTeamsBySkill(playersForFirstTwoTeams, 2);
+                        
+                        // Adicionar goleiros ao pool para Times 3+
+                        const poolForOtherTeams = shuffleArray([...remainingPlayers, ...selectedGoalkeepers]);
+                        
+                        const numAdditionalTeams = Math.floor(poolForOtherTeams.length / playersPerTeam);
+                        
+                        if (numAdditionalTeams > 0) {
+                            const playersForAdditionalTeams = poolForOtherTeams.slice(0, numAdditionalTeams * playersPerTeam);
+                            leftovers = poolForOtherTeams.slice(numAdditionalTeams * playersPerTeam);
+                            
+                            const additionalTeams = balanceTeamsBySkill(playersForAdditionalTeams, numAdditionalTeams);
+                            teams = [...teams, ...additionalTeams];
+                        } else {
+                            leftovers = poolForOtherTeams;
+                        }
+                    } else {
+                        // Menos de 8 jogadores de linha: apenas 1 time ou jogadores fora
+                        const numTeams = Math.floor(shuffledOutfield.length / playersPerTeam);
                         if (numTeams > 0) {
-                            const playersForTeams = outfieldPool.slice(0, numTeams * playersPerTeam);
-                            leftovers = outfieldPool.slice(numTeams * playersPerTeam);
-
+                            const playersForTeams = shuffledOutfield.slice(0, numTeams * playersPerTeam);
+                            leftovers = shuffledOutfield.slice(numTeams * playersPerTeam);
+                            leftovers = [...leftovers, ...selectedGoalkeepers];
                             teams = balanceTeamsBySkill(playersForTeams, numTeams);
                         } else {
-                            leftovers = outfieldPool;
+                            leftovers = [...shuffledOutfield, ...selectedGoalkeepers];
                         }
                     }
                 }
@@ -388,7 +434,15 @@
                 }
 
                 if (teams.length >= 2) {
-                    message += '_Observação: O Time 1 joga contra o Time 2 primeiro._\n\n';
+                    let obs = '_Observação: O Time 1 joga contra o Time 2 primeiro.';
+                    
+                    if (teams.length > 2) {
+                        obs += ' Os goleiros são exclusivos para Times 1 e 2, mas podem jogar na linha em outros times._\n\n';
+                    } else {
+                        obs += ' Os goleiros são exclusivos e não jogam na linha._\n\n';
+                    }
+                    
+                    message += obs;
                 }
                 
                 if (teams.length > 0) {
@@ -490,11 +544,20 @@
                 
                 if (teams.length >= 2) {
                     y += 2;
-                    doc.setFontSize(10);
+                    doc.setFontSize(9);
                     doc.setTextColor(107, 114, 128);
                     doc.setFont(undefined, 'italic');
-                    doc.text("Observação: O Time 1 joga contra o Time 2 primeiro.", margin, y);
-                    y += 10;
+                    
+                    let obsText = "Observação: O Time 1 joga contra o Time 2 primeiro.";
+                    
+                    if (teams.length > 2) {
+                        obsText += " Os goleiros são exclusivos para Times 1 e 2, mas podem jogar na linha em outros times.";
+                    } else {
+                        obsText += " Os goleiros são exclusivos e não jogam na linha.";
+                    }
+                    
+                    doc.text(obsText, margin, y, { maxWidth: pageWidth - (margin * 2) });
+                    y += 15;
                 }
 
                 teams.forEach((team, index) => {
