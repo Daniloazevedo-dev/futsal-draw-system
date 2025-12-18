@@ -179,10 +179,12 @@
                         <div class="bg-amber-50 border border-amber-200 p-4 rounded-lg fade-in">
                             <h3 class="font-bold text-xl text-amber-800 mb-3">🧤 Goleiros Sorteados</h3>
                             <ul class="space-y-2">`;
-                    if (teams.length >= 2) {
+                    if (teams.length >= 1) {
+                        // Sempre mostrar a qual time o goleiro pertence quando houver times
                         goalkeepersHtml += `<li class="p-2 rounded font-semibold">${selectedGoalkeepers[0].name} (Time 1)</li>`;
                         goalkeepersHtml += `<li class="p-2 rounded font-semibold">${selectedGoalkeepers[1].name} (Time 2)</li>`;
                     } else {
+                        // Sem times formados, só mostrar os goleiros
                         selectedGoalkeepers.forEach(player => {
                             goalkeepersHtml += `<li class="p-2 rounded font-semibold">${player.name}</li>`;
                         });
@@ -340,65 +342,68 @@
                 leftovers = [];
                 teamWithBall = -1;
 
-                if (presentPlayers.length <= 10) {
-                    // ≤ 10 jogadores: 2 times sem goleiros
-                    if (outfieldPlayersExcludingGk.length % 2 !== 0) {
-                        showMessage('Para 10 jogadores ou menos, após escolher 2 goleiros, o número de jogadores de linha deve ser par.');
-                        return;
-                    }
-                    const numTeams = 2;
-                    teams = balanceTeamsBySkill(outfieldPlayersExcludingGk, numTeams);
-                } 
-                else {
-                    // > 10 jogadores: Times 1 e 2 sem goleiros, Times 3+ podem ter goleiros
-                    const playersPerTeam = 4;
-                    const shuffledOutfield = shuffleArray([...outfieldPlayersExcludingGk]);
+                // Se só tiver os 2 goleiros (sem jogadores de linha)
+                if (outfieldPlayersExcludingGk.length === 0) {
+                    // Apenas goleiros: não formar times, só mostrar goleiros
+                    renderTeams();
+                    return;
+                }
+
+                // Lógica baseada em times de 4 jogadores (máximo e ideal)
+                const maxPlayersPerTeam = 4;
+                const minPlayersPerTeam = 2;
+                const shuffledOutfield = shuffleArray([...outfieldPlayersExcludingGk]);
+                
+                // Verificar se temos jogadores suficientes para formar Times 1 e 2 completos
+                if (shuffledOutfield.length >= 8) {
+                    // Formar Times 1 e 2 (sem goleiros) - 4 jogadores cada
+                    const playersForFirstTwoTeams = shuffledOutfield.slice(0, 8);
+                    const remainingPlayers = shuffledOutfield.slice(8);
                     
-                    if (shuffledOutfield.length >= 8) {
-                        // Formar Times 1 e 2 (sem goleiros)
-                        const playersForFirstTwoTeams = shuffledOutfield.slice(0, 8);
-                        const remainingPlayers = shuffledOutfield.slice(8);
+                    teams = balanceTeamsBySkill(playersForFirstTwoTeams, 2);
+                    
+                    // Adicionar goleiros ao pool para Times 3+
+                    const poolForOtherTeams = [...remainingPlayers, ...selectedGoalkeepers];
+                    
+                    if (poolForOtherTeams.length >= maxPlayersPerTeam) {
+                        // Calcular quantos times completos de 4 podemos formar
+                        const numFullTeams = Math.floor(poolForOtherTeams.length / maxPlayersPerTeam);
+                        const playersForFullTeams = poolForOtherTeams.slice(0, numFullTeams * maxPlayersPerTeam);
+                        const remainingAfterFullTeams = poolForOtherTeams.slice(numFullTeams * maxPlayersPerTeam);
                         
-                        teams = balanceTeamsBySkill(playersForFirstTwoTeams, 2);
+                        // Balancear os times completos por habilidade
+                        const additionalTeams = balanceTeamsBySkill(playersForFullTeams, numFullTeams);
+                        teams = [...teams, ...additionalTeams];
                         
-                        // Adicionar goleiros ao pool para Times 3+
-                        const poolForOtherTeams = shuffleArray([...remainingPlayers, ...selectedGoalkeepers]);
-                        
-                        const numAdditionalTeams = Math.floor(poolForOtherTeams.length / playersPerTeam);
-                        
-                        if (numAdditionalTeams > 0) {
-                            const playersForAdditionalTeams = poolForOtherTeams.slice(0, numAdditionalTeams * playersPerTeam);
-                            const remainingAfterTeams = poolForOtherTeams.slice(numAdditionalTeams * playersPerTeam);
-                            
-                            const additionalTeams = balanceTeamsBySkill(playersForAdditionalTeams, numAdditionalTeams);
-                            teams = [...teams, ...additionalTeams];
-                            
-                            // Se sobrarem jogadores, adicionar como um time extra
-                            if (remainingAfterTeams.length > 0) {
-                                teams.push(remainingAfterTeams);
+                        // Se sobrarem jogadores, formar time adicional
+                        if (remainingAfterFullTeams.length >= minPlayersPerTeam) {
+                            teams.push(remainingAfterFullTeams);
+                        } else if (remainingAfterFullTeams.length > 0) {
+                            // Apenas 1 jogador: adicionar ao último time se não exceder 4
+                            if (teams[teams.length - 1].length < maxPlayersPerTeam) {
+                                teams[teams.length - 1].push(...remainingAfterFullTeams);
+                            } else {
+                                // Criar novo time com 1 jogador
+                                teams.push(remainingAfterFullTeams);
                             }
+                        }
+                    } else if (poolForOtherTeams.length >= minPlayersPerTeam) {
+                        // Entre 2 e 3 jogadores: formar um novo time
+                        teams.push(poolForOtherTeams);
+                    } else if (poolForOtherTeams.length > 0) {
+                        // Apenas 1 jogador: adicionar ao último time se não exceder 4
+                        if (teams[teams.length - 1].length < maxPlayersPerTeam) {
+                            teams[teams.length - 1].push(...poolForOtherTeams);
                         } else {
-                            // Todos formam um único time
                             teams.push(poolForOtherTeams);
                         }
-                    } else {
-                        // Menos de 8 jogadores de linha: formar o que for possível e resto vira um time
-                        const numTeams = Math.floor(shuffledOutfield.length / playersPerTeam);
-                        if (numTeams > 0) {
-                            const playersForTeams = shuffledOutfield.slice(0, numTeams * playersPerTeam);
-                            const remainingPlayers = shuffledOutfield.slice(numTeams * playersPerTeam);
-                            teams = balanceTeamsBySkill(playersForTeams, numTeams);
-                            
-                            // Adicionar resto + goleiros como um time extra
-                            const extraTeam = [...remainingPlayers, ...selectedGoalkeepers];
-                            if (extraTeam.length > 0) {
-                                teams.push(extraTeam);
-                            }
-                        } else {
-                            // Todos formam um único time
-                            teams.push([...shuffledOutfield, ...selectedGoalkeepers]);
-                        }
                     }
+                } else if (shuffledOutfield.length >= minPlayersPerTeam) {
+                    // 2 a 7 jogadores de linha: formar Times 1 e 2 (podem ser desbalanceados)
+                    teams = balanceTeamsBySkill(shuffledOutfield, 2);
+                } else {
+                    // Apenas 1 jogador de linha: criar 1 time com ele
+                    teams = [shuffledOutfield];
                 }
                 
                 if (teams.length >= 2) {
@@ -590,7 +595,6 @@
                     }));
                     
                     renderPlayers();
-                    showMessage('Jogadores carregados com sucesso!', false);
                 } catch (error) {
                     console.error('Erro ao carregar jogadores:', error);
                     showMessage('Não foi possível carregar a lista de jogadores.', true);
