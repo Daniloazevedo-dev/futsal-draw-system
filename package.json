@@ -1,0 +1,22 @@
+{
+  "name": "futsal-draw-system",
+  "version": "1.0.0",
+  "description": "Sistema de sorteio de times de futsal - Progressive Web App",
+  "main": "index.html",
+  "scripts": {
+    "start": "http-server -p 8080 -c-1",
+    "dev": "http-server -p 8080 -c-1 -o"
+  },
+  "keywords": [
+    "pwa",
+    "futsal",
+    "sorteio",
+    "times",
+    "sports"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  }
+}
