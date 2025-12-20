@@ -671,6 +671,10 @@
             });
         }
 
+        // Detectar iOS
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+        const isInStandaloneMode = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+
         // Prompt de instalação PWA
         let deferredPrompt;
         const installButton = document.createElement('button');
@@ -680,13 +684,60 @@
         installButton.setAttribute('aria-label', 'Instalar aplicativo');
         document.body.appendChild(installButton);
 
+        // Modal de instruções para iOS
+        const iosModal = document.createElement('div');
+        iosModal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden z-50';
+        iosModal.id = 'ios-install-modal';
+        iosModal.innerHTML = `
+            <div class="bg-white rounded-2xl p-6 max-w-md shadow-2xl">
+                <h3 class="text-xl font-bold text-slate-800 mb-4">📱 Instalar no iPhone</h3>
+                <div class="space-y-3 text-slate-600">
+                    <p class="flex items-start gap-2">
+                        <span class="text-2xl">1️⃣</span>
+                        <span>Toque no botão <strong>Compartilhar</strong> <span class="inline-block">📤</span> (na barra inferior do Safari)</span>
+                    </p>
+                    <p class="flex items-start gap-2">
+                        <span class="text-2xl">2️⃣</span>
+                        <span>Role para baixo e toque em <strong>"Adicionar à Tela de Início"</strong> <span class="inline-block">➕</span></span>
+                    </p>
+                    <p class="flex items-start gap-2">
+                        <span class="text-2xl">3️⃣</span>
+                        <span>Toque em <strong>"Adicionar"</strong> no canto superior direito</span>
+                    </p>
+                </div>
+                <button onclick="document.getElementById('ios-install-modal').classList.add('hidden')" 
+                        class="w-full mt-6 bg-indigo-600 text-white font-semibold py-3 px-6 rounded-lg hover:bg-indigo-700 transition">
+                    Entendi
+                </button>
+            </div>
+        `;
+        document.body.appendChild(iosModal);
+
+        // Se for iOS e não estiver instalado, mostrar botão com instruções
+        if (isIOS && !isInStandaloneMode) {
+            installButton.classList.remove('hidden');
+            installButton.addEventListener('click', () => {
+                iosModal.classList.remove('hidden');
+            });
+        }
+
+        // Fechar modal ao clicar fora
+        iosModal.addEventListener('click', (e) => {
+            if (e.target === iosModal) {
+                iosModal.classList.add('hidden');
+            }
+        });
+
+        // Para Android/Chrome/Edge - usar API padrão
         window.addEventListener('beforeinstallprompt', (e) => {
             // Prevenir o prompt automático
             e.preventDefault();
             // Salvar o evento para usar depois
             deferredPrompt = e;
-            // Mostrar o botão de instalação
-            installButton.classList.remove('hidden');
+            // Mostrar o botão de instalação (apenas se não for iOS)
+            if (!isIOS) {
+                installButton.classList.remove('hidden');
+            }
             console.log('💡 Prompt de instalação disponível');
         });
 
