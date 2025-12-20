@@ -4,6 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gerador de Times de Futsal</title>
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#4f46e5">
+    <meta name="description" content="Aplicativo para sortear times de futsal de forma equilibrada e justa">
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- Apple Touch Icons -->
+    <link rel="apple-touch-icon" href="icons/apple-icon-180.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Times Futsal">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="96x96" href="icons/icon-96x96.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="icons/manifest-icon-192.maskable.png">
+    <link rel="shortcut icon" href="icons/icon-96x96.png">
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
@@ -614,6 +631,94 @@
             loadPlayersFromJson();
             
             renderTeams();
+        });
+    </script>
+
+    <!-- Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(registration => {
+                        console.log('✅ Service Worker registrado:', registration.scope);
+                        
+                        // Verificar atualizações
+                        registration.addEventListener('updatefound', () => {
+                            const newWorker = registration.installing;
+                            newWorker.addEventListener('statechange', () => {
+                                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                    // Nova versão disponível
+                                    if (confirm('Nova versão disponível! Deseja atualizar agora?')) {
+                                        newWorker.postMessage({ type: 'SKIP_WAITING' });
+                                        window.location.reload();
+                                    }
+                                }
+                            });
+                        });
+                    })
+                    .catch(error => {
+                        console.error('❌ Erro ao registrar Service Worker:', error);
+                    });
+
+                // Recarregar quando o novo service worker assumir o controle
+                let refreshing = false;
+                navigator.serviceWorker.addEventListener('controllerchange', () => {
+                    if (!refreshing) {
+                        refreshing = true;
+                        window.location.reload();
+                    }
+                });
+            });
+        }
+
+        // Prompt de instalação PWA
+        let deferredPrompt;
+        const installButton = document.createElement('button');
+        installButton.innerHTML = '📱 Instalar App';
+        installButton.className = 'fixed bottom-4 right-4 bg-indigo-600 text-white font-semibold py-3 px-6 rounded-full shadow-lg hover:bg-indigo-700 transition-all hover:scale-105 hidden z-50';
+        installButton.id = 'install-btn';
+        installButton.setAttribute('aria-label', 'Instalar aplicativo');
+        document.body.appendChild(installButton);
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            // Prevenir o prompt automático
+            e.preventDefault();
+            // Salvar o evento para usar depois
+            deferredPrompt = e;
+            // Mostrar o botão de instalação
+            installButton.classList.remove('hidden');
+            console.log('💡 Prompt de instalação disponível');
+        });
+
+        installButton.addEventListener('click', async () => {
+            if (!deferredPrompt) {
+                return;
+            }
+            
+            // Mostrar o prompt de instalação
+            deferredPrompt.prompt();
+            
+            // Aguardar a escolha do usuário
+            const { outcome } = await deferredPrompt.userChoice;
+            console.log(`Resultado da instalação: ${outcome}`);
+            
+            if (outcome === 'accepted') {
+                console.log('✅ Usuário aceitou instalar o PWA');
+            } else {
+                console.log('❌ Usuário recusou instalar o PWA');
+            }
+            
+            // Limpar o prompt
+            deferredPrompt = null;
+            // Esconder o botão
+            installButton.classList.add('hidden');
+        });
+
+        window.addEventListener('appinstalled', () => {
+            console.log('🎉 PWA instalado com sucesso!');
+            // Esconder o botão de instalação
+            installButton.classList.add('hidden');
+            deferredPrompt = null;
         });
     </script>
 </body>
