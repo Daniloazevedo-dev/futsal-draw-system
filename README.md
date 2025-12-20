@@ -57,7 +57,47 @@ O aplicativo abrirá automaticamente no navegador em `http://localhost:8080`
 2. Toque no botão de compartilhar (📤)
 3. Role para baixo e toque em "Adicionar à Tela de Início"
 
-## 🎮 Como Usar
+## � Compatibilidade de Navegadores
+
+### ✅ Instalação Automática (Botão "Instalar App")
+
+**Android:**
+- ✅ Chrome - Suporte completo
+- ✅ Edge - Suporte completo
+- ✅ Samsung Internet - Suporte completo
+- ✅ Opera - Suporte completo
+- ⚠️ Firefox - Suporte limitado
+
+**Desktop (Windows/Mac/Linux):**
+- ✅ Chrome - Suporte completo
+- ✅ Edge - Suporte completo (recomendado no Windows)
+- ✅ Opera - Suporte completo
+- ✅ Brave - Suporte completo
+- ✅ Safari - Suporte nativo (macOS 14+)
+- ⚠️ Firefox - Funciona, mas instalação manual
+
+**iOS/iPhone:**
+- ✅ Safari - **ÚNICO navegador que funciona no iOS**
+- ❌ Chrome, Firefox, Edge - Não suportam PWA no iOS (restrição da Apple)
+
+### 📊 Funcionalidades por Navegador
+
+| Funcionalidade | Chrome/Edge | Safari iOS | Firefox |
+|---|:---:|:---:|:---:|
+| Service Worker (offline) | ✅ | ✅ | ✅ |
+| Instalação automática | ✅ | ❌ | ⚠️ |
+| Ícones personalizados | ✅ | ✅ | ✅ |
+| App standalone | ✅ | ✅ | ⚠️ |
+
+### 🎯 Recomendações de Uso
+
+- **Android**: Use Chrome ou Edge para melhor experiência
+- **iPhone/iPad**: Use Safari (obrigatório para instalação)
+- **Windows**: Chrome ou Edge
+- **macOS**: Chrome, Edge ou Safari
+- **Linux**: Chrome ou Edge
+
+## �🎮 Como Usar
 
 ### Funcionalidades Principais
 
