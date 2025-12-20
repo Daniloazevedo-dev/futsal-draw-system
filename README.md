@@ -1,13 +1,67 @@
-# futsal-draw-system
-Projeto criado para sorteios de times de futsal
+# Gerador de Times de Futsal ⚽ - Progressive Web App (PWA)
 
-# Gerador de Times de Futsal - Manual de Regras
+Aplicativo web progressivo para sorteio equilibrado de times de futsal, com funcionalidade offline e instalável em dispositivos móveis e desktop.
 
-Este documento descreve todas as regras e funcionalidades do aplicativo Gerador de Times de Futsal.
+## 🚀 Características
 
-## 1. Funcionalidades Principais
+- ✅ **PWA Completo**: Instalável em qualquer dispositivo
+- 📱 **Funciona Offline**: Continue usando sem internet
+- ⚡ **Rápido e Leve**: Cache inteligente de recursos
+- 🎨 **Interface Moderna**: Design responsivo com Tailwind CSS
+- 📄 **Exportação PDF**: Gere relatórios dos times
+- 📲 **Compartilhamento**: Envie resultados via WhatsApp
 
-### Adicionar e Remover Jogadores
+## 📋 Pré-requisitos
+
+- Node.js (versão 14 ou superior)
+- npm (geralmente vem com Node.js)
+
+## 🛠️ Instalação e Configuração
+
+### 1. Instalar Dependências
+
+```bash
+npm install
+```
+
+### 2. Gerar Ícones do PWA
+
+```bash
+npm run generate-icons
+```
+
+Este comando criará automaticamente todos os ícones necessários na pasta `icons/`.
+
+### 3. Iniciar Servidor de Desenvolvimento
+
+```bash
+npm run dev
+```
+
+O aplicativo abrirá automaticamente no navegador em `http://localhost:8080`
+
+## 📱 Como Instalar o PWA
+
+### No Desktop (Chrome/Edge):
+1. Abra o aplicativo no navegador
+2. Clique no ícone de instalação na barra de endereços (➕) ou
+3. Clique no botão "📱 Instalar App" que aparece no canto inferior direito
+
+### No Android (Chrome):
+1. Abra o aplicativo no Chrome
+2. Toque no menu (⋮) > "Adicionar à tela inicial" ou
+3. Toque no botão "📱 Instalar App"
+
+### No iOS (Safari):
+1. Abra o aplicativo no Safari
+2. Toque no botão de compartilhar (📤)
+3. Role para baixo e toque em "Adicionar à Tela de Início"
+
+## 🎮 Como Usar
+
+### Funcionalidades Principais
+
+#### Adicionar e Remover Jogadores
 - **Adicionar**: Digite o nome do jogador no campo de texto e clique em `"Adicionar"`.
 - **Remover**: Clique no ícone de lixeira ao lado do nome de um jogador para removê-lo da lista.
 
