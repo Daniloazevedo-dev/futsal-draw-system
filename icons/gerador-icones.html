@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Gerador de Ícones PWA</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; max-width: 800px; margin: 0 auto; }
+        canvas { border: 1px solid #ccc; margin: 10px 0; }
+        button { padding: 10px 20px; margin: 5px; cursor: pointer; background: #4f46e5; color: white; border: none; border-radius: 5px; }
+        button:hover { background: #4338ca; }
+        .icon-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; margin-top: 20px; }
+        .icon-item { text-align: center; padding: 10px; background: #f3f4f6; border-radius: 8px; }
+        .icon-item canvas { width: 100%; height: auto; }
+    </style>
+</head>
+<body>
+    <h1>🎨 Gerador de Ícones PWA - Futsal</h1>
+    <p>Clique no botão abaixo para gerar e baixar todos os ícones necessários para o PWA.</p>
+    
+    <button onclick="generateAllIcons()">Gerar e Baixar Todos os Ícones</button>
+    
+    <div id="status"></div>
+    <div class="icon-grid" id="iconGrid"></div>
+
+    <script>
+        const sizes = [72, 96, 128, 144, 152, 180, 192, 384, 512];
+        
+        function drawIcon(canvas, size) {
+            const ctx = canvas.getContext('2d');
+            canvas.width = size;
+            canvas.height = size;
+            
+            // Gradiente de fundo (cores do layout)
+            const gradient = ctx.createLinearGradient(0, 0, size, size);
+            gradient.addColorStop(0, '#4f46e5'); // indigo-600
+            gradient.addColorStop(1, '#6366f1'); // indigo-500
+            ctx.fillStyle = gradient;
+            ctx.roundRect(0, 0, size, size, size * 0.215);
+            ctx.fill();
+            
+            // Bola de Futsal (centralizada e maior)
+            const ballRadius = size * 0.273;
+            const ballX = size / 2;
+            const ballY = size / 2;
+            
+            // Bola base
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.98)';
+            ctx.beginPath();
+            ctx.arc(ballX, ballY, ballRadius, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Contorno sutil
+            ctx.strokeStyle = '#e0e7ff';
+            ctx.lineWidth = size * 0.004;
+            ctx.beginPath();
+            ctx.arc(ballX, ballY, ballRadius * 0.928, 0, Math.PI * 2);
+            ctx.stroke();
+            
+            // Pentágonos da bola de futsal
+            const pentSize = ballRadius * 0.35;
+            
+            // Pentágono central
+            ctx.fillStyle = 'rgba(79, 70, 229, 0.9)'; // #4f46e5
+            ctx.beginPath();
+            for (let i = 0; i < 5; i++) {
+                const angle = (i * 2 * Math.PI / 5) - Math.PI / 2;
+                const x = ballX + pentSize * Math.cos(angle);
+                const y = ballY - ballRadius * 0.25 + pentSize * Math.sin(angle);
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            ctx.closePath();
+            ctx.fill();
+            
+            // Pentágonos secundários (esquerda)
+            ctx.fillStyle = 'rgba(99, 102, 241, 0.7)'; // #6366f1
+            ctx.beginPath();
+            const leftX = ballX - ballRadius * 0.48;
+            const leftY = ballY - ballRadius * 0.08;
+            for (let i = 0; i < 5; i++) {
+                const angle = (i * 2 * Math.PI / 5) - Math.PI / 2 + 0.3;
+                const x = leftX + pentSize * 0.6 * Math.cos(angle);
+                const y = leftY + pentSize * 0.6 * Math.sin(angle);
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            ctx.closePath();
+            ctx.fill();
+            
+            // Pentágonos secundários (direita)
+            ctx.beginPath();
+            const rightX = ballX + ballRadius * 0.48;
+            const rightY = ballY - ballRadius * 0.08;
+            for (let i = 0; i < 5; i++) {
+                const angle = (i * 2 * Math.PI / 5) - Math.PI / 2 - 0.3;
+                const x = rightX + pentSize * 0.6 * Math.cos(angle);
+                const y = rightY + pentSize * 0.6 * Math.sin(angle);
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            ctx.closePath();
+            ctx.fill();
+            
+            // Pentágono inferior
+            ctx.fillStyle = 'rgba(129, 140, 248, 0.6)';
+            ctx.beginPath();
+            const bottomY = ballY + ballRadius * 0.47;
+            for (let i = 0; i < 5; i++) {
+                const angle = (i * 2 * Math.PI / 5) + Math.PI / 2;
+                const x = ballX + pentSize * 0.55 * Math.cos(angle);
+                const y = bottomY + pentSize * 0.55 * Math.sin(angle);
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            ctx.closePath();
+            ctx.fill();
+            
+            // Linhas de costura da bola
+            ctx.strokeStyle = 'rgba(67, 56, 202, 0.6)';
+            ctx.lineWidth = size * 0.005;
+            ctx.lineCap = 'round';
+            
+            // Algumas linhas conectando os pentágonos
+            const lines = [
+                [ballX, ballY - ballRadius * 0.5, leftX + pentSize * 0.3, leftY - pentSize * 0.3],
+                [ballX, ballY - ballRadius * 0.5, rightX - pentSize * 0.3, rightY - pentSize * 0.3],
+                [ballX - pentSize * 0.3, ballY, leftX + pentSize * 0.4, leftY + pentSize * 0.2],
+                [ballX + pentSize * 0.3, ballY, rightX - pentSize * 0.4, rightY + pentSize * 0.2]
+            ];
+            
+            lines.forEach(([x1, y1, x2, y2]) => {
+                ctx.beginPath();
+                ctx.moveTo(x1, y1);
+                ctx.lineTo(x2, y2);
+                ctx.stroke();
+            });
+            
+            // Brilho/Reflexo na bola
+            const glowX = ballX - ballRadius * 0.35;
+            const glowY = ballY - ballRadius * 0.4;
+            const glow = ctx.createRadialGradient(glowX, glowY, 0, glowX, glowY, ballRadius * 0.4);
+            glow.addColorStop(0, 'rgba(255, 255, 255, 0.6)');
+            glow.addColorStop(0.5, 'rgba(255, 255, 255, 0.3)');
+            glow.addColorStop(1, 'rgba(255, 255, 255, 0)');
+            ctx.fillStyle = glow;
+            ctx.beginPath();
+            ctx.arc(glowX, glowY, ballRadius * 0.4, 0, Math.PI * 2);
+            ctx.fill();
+        }
+        
+        if (!CanvasRenderingContext2D.prototype.roundRect) {
+            CanvasRenderingContext2D.prototype.roundRect = function(x, y, width, height, radius) {
+                if (width < 2 * radius) radius = width / 2;
+                if (height < 2 * radius) radius = height / 2;
+                this.beginPath();
+                this.moveTo(x + radius, y);
+                this.arcTo(x + width, y, x + width, y + height, radius);
+                this.arcTo(x + width, y + height, x, y + height, radius);
+                this.arcTo(x, y + height, x, y, radius);
+                this.arcTo(x, y, x + width, y, radius);
+                this.closePath();
+                return this;
+            };
+        }
+        
+        function downloadCanvas(canvas, filename) {
+            const link = document.createElement('a');
+            link.download = filename;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+        
+        function generateAllIcons() {
+            const status = document.getElementById('status');
+            const iconGrid = document.getElementById('iconGrid');
+            iconGrid.innerHTML = '';
+            status.innerHTML = '<p>✨ Gerando ícones...</p>';
+            
+            let generated = 0;
+            
+            sizes.forEach((size, index) => {
+                setTimeout(() => {
+                    const canvas = document.createElement('canvas');
+                    drawIcon(canvas, size);
+                    
+                    // Adicionar preview
+                    const div = document.createElement('div');
+                    div.className = 'icon-item';
+                    const preview = document.createElement('canvas');
+                    preview.width = size;
+                    preview.height = size;
+                    const previewCtx = preview.getContext('2d');
+                    previewCtx.drawImage(canvas, 0, 0);
+                    div.appendChild(preview);
+                    const label = document.createElement('div');
+                    label.textContent = `${size}x${size}`;
+                    div.appendChild(label);
+                    iconGrid.appendChild(div);
+                    
+                    // Determinar nome do arquivo
+                    let filename;
+                    if (size === 32) filename = 'favicon-32x32.png';
+                    else if (size === 180) filename = 'apple-icon-180.png';
+                    else if (size === 192) filename = 'manifest-icon-192.maskable.png';
+                    else if (size === 512) filename = 'manifest-icon-512.maskable.png';
+                    else filename = `icon-${size}x${size}.png`;
+                    
+                    // Fazer download
+                    downloadCanvas(canvas, filename);
+                    
+                    generated++;
+                    status.innerHTML = `<p>✅ ${generated}/${sizes.length} ícones gerados e baixados!</p>`;
+                    
+                    if (generated === sizes.length) {
+                        status.innerHTML += '<p><strong>🎉 Todos os ícones foram baixados!</strong></p>';
+                        status.innerHTML += '<p>📁 Mova todos os arquivos baixados para a pasta <code>icons/</code> do projeto.</p>';
+                    }
+                }, index * 200);
+            });
+        }
+    </script>
+</body>
+</html>

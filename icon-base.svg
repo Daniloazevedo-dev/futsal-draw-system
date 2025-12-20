@@ -1,0 +1,36 @@
+<svg width="512" height="512" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#4f46e5;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#6366f1;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Fundo com gradiente indigo -->
+  <rect width="512" height="512" rx="110" fill="url(#grad)"/>
+  
+  <!-- Bola de Futsal (maior e mais detalhada) -->
+  <circle cx="256" cy="256" r="140" fill="white" opacity="0.98"/>
+  <circle cx="256" cy="256" r="130" fill="none" stroke="#e0e7ff" stroke-width="2"/>
+  
+  <!-- Pentágonos da bola de futsal -->
+  <!-- Pentágono central -->
+  <path d="M 256 190 L 285 210 L 272 245 L 240 245 L 227 210 Z" fill="#4f46e5" opacity="0.9"/>
+  
+  <!-- Pentágonos ao redor -->
+  <path d="M 190 235 L 210 215 L 235 225 L 230 250 L 200 255 Z" fill="#6366f1" opacity="0.7"/>
+  <path d="M 322 235 L 302 215 L 277 225 L 282 250 L 312 255 Z" fill="#6366f1" opacity="0.7"/>
+  <path d="M 256 320 L 235 305 L 245 275 L 267 275 L 277 305 Z" fill="#818cf8" opacity="0.6"/>
+  
+  <!-- Linhas de costura da bola -->
+  <path d="M 256 190 L 227 210" stroke="#4338ca" stroke-width="2.5" fill="none" opacity="0.6"/>
+  <path d="M 256 190 L 285 210" stroke="#4338ca" stroke-width="2.5" fill="none" opacity="0.6"/>
+  <path d="M 285 210 L 302 215" stroke="#4338ca" stroke-width="2.5" fill="none" opacity="0.6"/>
+  <path d="M 227 210 L 210 215" stroke="#4338ca" stroke-width="2.5" fill="none" opacity="0.6"/>
+  <path d="M 240 245 L 235 225" stroke="#4338ca" stroke-width="2.5" fill="none" opacity="0.6"/>
+  <path d="M 272 245 L 277 225" stroke="#4338ca" stroke-width="2.5" fill="none" opacity="0.6"/>
+  
+  <!-- Brilho na bola -->
+  <ellipse cx="220" cy="215" rx="25" ry="35" fill="white" opacity="0.3"/>
+  <ellipse cx="215" cy="210" rx="15" ry="20" fill="white" opacity="0.5"/>
+</svg>
