@@ -55,16 +55,16 @@
             <div class="bg-white p-6 rounded-2xl shadow-lg">
                 <h2 class="text-2xl font-semibold text-slate-700 mb-4 border-b pb-2">Jogadores</h2>
                 
-                <form id="add-player-form" class="flex gap-3 mb-4">
+                <form id="add-player-form" class="flex flex-col sm:flex-row gap-3 mb-4">
                     <input
                         id="player-name-input"
                         type="text"
                         placeholder="Nome do jogador"
-                        class="flex-grow w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
+                        class="w-full sm:flex-grow px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
                     />
                     <select
                         id="player-skill-input"
-                        class="px-3 py-2 border border-slate-300 rounded-lg bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
+                        class="w-full sm:w-auto px-3 py-2 border border-slate-300 rounded-lg bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
                         aria-label="Habilidade do jogador"
                     >
                         <option value="1">Hab. 1</option>
@@ -73,7 +73,7 @@
                         <option value="4">Hab. 4</option>
                         <option value="5">Hab. 5</option>
                     </select>
-                    <button type="submit" class="bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-700 transition">
+                    <button type="submit" class="w-full sm:w-auto bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-700 transition">
                         Adicionar
                     </button>
                 </form>
