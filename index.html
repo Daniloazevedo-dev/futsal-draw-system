@@ -63,6 +63,17 @@
                         placeholder="Nome do jogador"
                         class="flex-grow w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
                     />
+                    <select
+                        id="player-skill-input"
+                        class="px-3 py-2 border border-slate-300 rounded-lg bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
+                        aria-label="Habilidade do jogador"
+                    >
+                        <option value="1">Hab. 1</option>
+                        <option value="2">Hab. 2</option>
+                        <option value="3" selected>Hab. 3</option>
+                        <option value="4">Hab. 4</option>
+                        <option value="5">Hab. 5</option>
+                    </select>
                     <button type="submit" class="bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-700 transition">
                         Adicionar
                     </button>
@@ -120,6 +131,7 @@
             // --- DOM ELEMENTS ---
             const addPlayerForm = document.getElementById('add-player-form');
             const playerNameInput = document.getElementById('player-name-input');
+            const playerSkillInput = document.getElementById('player-skill-input');
             const playersListContainer = document.getElementById('players-list');
             const teamsOutputContainer = document.getElementById('teams-output');
             const generateTeamsBtn = document.getElementById('generate-teams-btn');
@@ -249,8 +261,14 @@
             const handleAddPlayer = (e) => {
                 e.preventDefault();
                 const name = playerNameInput.value.trim();
+                const skill = parseInt(playerSkillInput.value, 10);
                 if (!name) {
                     showMessage('É obrigatório digitar um nome para adicionar o jogador.');
+                    return;
+                }
+
+                if (!Number.isInteger(skill) || skill < 1 || skill > 5) {
+                    showMessage('A habilidade deve ser um número de 1 a 5.');
                     return;
                 }
 
@@ -262,8 +280,9 @@
                     return;
                 }
 
-                players.push({ id: Date.now(), name, skill: 3, present: true });
+                players.push({ id: Date.now(), name, skill, present: true });
                 playerNameInput.value = '';
+                playerSkillInput.value = '3';
                 renderPlayers();
             };
 
@@ -283,8 +302,21 @@
                     const player = players.find(p => p.id === playerId);
                     if (player) {
                         player.present = e.target.checked;
-                        renderPlayers();
-                        handleClearTeams();
+
+                        const playerRow = e.target.closest('.flex.items-center.justify-between');
+                        if (playerRow) {
+                            playerRow.classList.remove('bg-slate-50', 'bg-slate-100', 'opacity-60');
+                            if (player.present) {
+                                playerRow.classList.add('bg-slate-50');
+                            } else {
+                                playerRow.classList.add('bg-slate-100', 'opacity-60');
+                            }
+                        }
+
+                        const hasGeneratedResults = selectedGoalkeepers.length > 0 || teams.length > 0 || leftovers.length > 0;
+                        if (hasGeneratedResults) {
+                            handleClearTeams();
+                        }
                     }
                 }
             };

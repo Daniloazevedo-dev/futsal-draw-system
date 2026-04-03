@@ -102,12 +102,16 @@ O aplicativo abrirá automaticamente no navegador em `http://localhost:8080`
 ### Funcionalidades Principais
 
 #### Adicionar e Remover Jogadores
-- **Adicionar**: Digite o nome do jogador no campo de texto e clique em `"Adicionar"`.
+- **Adicionar**: Digite o nome do jogador, selecione a habilidade (1 a 5) e clique em `"Adicionar"`.
 - **Remover**: Clique no ícone de lixeira ao lado do nome de um jogador para removê-lo da lista.
 
 ### Validação de Nomes:
 - É obrigatório digitar um nome para adicionar um jogador.
 - Não é permitido adicionar nomes duplicados. A verificação ignora espaços e diferenças entre letras maiúsculas e minúsculas (*ex: "Danilo", "danilo" e "danilo " são considerados o mesmo nome*).
+
+### Validação de Habilidade:
+- A habilidade é obrigatória no cadastro de jogador.
+- Os valores aceitos são inteiros de 1 a 5.
 
 ### Gerar os Times
 - Clique no botão `"Gerar Times"` para iniciar o sorteio.
