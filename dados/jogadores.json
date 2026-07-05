@@ -124,5 +124,47 @@
         "habilidade": 5,
         "numero": 5,
         "presenca": "N"
+    },
+     {
+        "id": 19,
+        "nome": "Ruan",
+        "habilidade": 5,
+        "numero": 98,
+        "presenca": "N"
+    },
+     {
+        "id": 20,
+        "nome": "Davi",
+        "habilidade": 5,
+        "numero": 97,
+        "presenca": "N"
+    },
+     {
+        "id": 21,
+        "nome": "Diego",
+        "habilidade": 5,
+        "numero": 96,
+        "presenca": "N"
+    },
+     {
+        "id": 22,
+        "nome": "Pg",
+        "habilidade": 5,
+        "numero": 95,
+        "presenca": "N"
+    },
+     {
+        "id": 23,
+        "nome": "Eric",
+        "habilidade": 4,
+        "numero": 94,
+        "presenca": "N"
+    },
+     {
+        "id": 24,
+        "nome": "Thalys",
+        "habilidade": 2,
+        "numero": 93,
+        "presenca": "N"
     }
 ]
