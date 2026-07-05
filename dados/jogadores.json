@@ -166,5 +166,12 @@
         "habilidade": 2,
         "numero": 93,
         "presenca": "N"
+    },
+     {
+        "id": 25,
+        "nome": "Tassio",
+        "habilidade": 5,
+        "numero": 92,
+        "presenca": "N"
     }
 ]
