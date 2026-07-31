@@ -4,167 +4,191 @@
         "nome": "Luiz",
         "habilidade": 5,
         "numero": 11,
-        "presenca": "N"
+        "presenca": "N",
+        "goleiro": "S"
     },
     {
         "id": 2,
         "nome": "Danilo",
         "habilidade": 5,
         "numero": 12,
-        "presenca": "N"
+        "presenca": "N",
+        "goleiro": "S"
     },
     {
         "id": 3,
         "nome": "Denilson",
         "habilidade": 5,
         "numero": 8,
-        "presenca": "N"
+        "presenca": "N",
+        "goleiro": "S"
     },
     {
         "id": 4,
         "nome": "Arthur",
         "habilidade": 2,
         "numero": 10,
-        "presenca": "N"
+        "presenca": "N",
+        "goleiro": "S"
     },
     {
         "id": 5,
         "nome": "Enzo",
         "habilidade": 2,
         "numero": 99,
-        "presenca": "N"
+        "presenca": "N",
+        "goleiro": "S"
     },
     {
         "id": 6,
         "nome": "Felipe",
         "habilidade": 1,
         "numero": 27,
-        "presenca": "N"
+        "presenca": "N",
+        "goleiro": "N"
     },
      {
         "id": 7,
         "nome": "Wanderson",
         "habilidade": 5,
         "numero": 30,
-        "presenca": "N"
+        "presenca": "N",
+        "goleiro": "S"
     },
      {
         "id": 8,
         "nome": "Heitor",
         "habilidade": 3,
         "numero": 7,
-        "presenca": "N"
+        "presenca": "N",
+        "goleiro": "N"
     },
      {
         "id": 9,
         "nome": "Dhiego N.",
         "habilidade": 5,
         "numero": 15,
-        "presenca": "N"
+        "presenca": "N",
+        "goleiro": "S"
     },
      {
         "id": 10,
         "nome": "Pietro",
         "habilidade": 4,
         "numero": 22,
-        "presenca": "N"
+        "presenca": "N",
+        "goleiro": "S"
     },
      {
         "id": 11,
         "nome": "Kauezinho",
         "habilidade": 5,
         "numero": 0,
-        "presenca": "N"
+        "presenca": "N",
+        "goleiro": "S"
     },
      {
         "id": 12,
         "nome": "Kauê",
         "habilidade": 5,
         "numero": 23,
-        "presenca": "N"
+        "presenca": "N",
+        "goleiro": "S"
     },
      {
         "id": 13,
         "nome": "Genivaldo S.",
         "habilidade": 4,
         "numero": 1,
-        "presenca": "N"
+        "presenca": "N",
+        "goleiro": "S"
     },
      {
         "id": 14,
         "nome": "Antônio",
         "habilidade": 5,
         "numero": 17,
-        "presenca": "N"
+        "presenca": "N",
+        "goleiro": "S"
     },
      {
         "id": 15,
         "nome": "Dheferson",
         "habilidade": 5,
         "numero": 14,
-        "presenca": "N"
+        "presenca": "N",
+        "goleiro": "S"
     },
      {
         "id": 16,
         "nome": "Juan",
         "habilidade": 5,
         "numero": 9,
-        "presenca": "N"
+        "presenca": "N",
+        "goleiro": "S"
     },
      {
         "id": 17,
         "nome": "Icaro",
         "habilidade": 3,
         "numero": 29,
-        "presenca": "N"
+        "presenca": "N",
+        "goleiro": "S"
     },
      {
         "id": 18,
         "nome": "Diego",
         "habilidade": 5,
         "numero": 5,
-        "presenca": "N"
+        "presenca": "N",
+        "goleiro": "S"
     },
      {
         "id": 19,
         "nome": "Ruan",
         "habilidade": 5,
         "numero": 98,
-        "presenca": "N"
+        "presenca": "N",
+        "goleiro": "S"
     },
      {
         "id": 20,
         "nome": "Davi",
         "habilidade": 5,
         "numero": 97,
-        "presenca": "N"
+        "presenca": "N",
+        "goleiro": "S"
     },
      {
         "id": 22,
         "nome": "Pg",
         "habilidade": 5,
         "numero": 95,
-        "presenca": "N"
+        "presenca": "N",
+        "goleiro": "S"
     },
      {
         "id": 23,
         "nome": "Eric",
         "habilidade": 4,
         "numero": 94,
-        "presenca": "N"
+        "presenca": "N",
+        "goleiro": "S"
     },
      {
         "id": 24,
         "nome": "Thalys",
         "habilidade": 2,
         "numero": 93,
-        "presenca": "N"
+        "presenca": "N",
+        "goleiro": "N"
     },
      {
         "id": 25,
         "nome": "Tassio",
         "habilidade": 5,
         "numero": 92,
-        "presenca": "N"
+        "presenca": "N",
+        "goleiro": "S"
     }
 ]

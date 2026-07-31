@@ -125,7 +125,7 @@ O sorteio segue um conjunto de regras para garantir a organização e o equilíb
 
 ### Regras Gerais
 - **Mínimo de Jogadores**: É necessário ter pelo menos 2 jogadores na lista para realizar o sorteio.
-- **Seleção de Goleiros**: Os 2 primeiros jogadores da lista embaralhada são sempre designados como goleiros.
+- **Seleção de Goleiros**: Os 2 goleiros são sorteados entre os jogadores elegíveis. Por padrão, apenas quem está com `goleiro: S` entra nesse sorteio. Com 6 ou menos jogadores presentes, quem estiver com `goleiro: N` também pode ser sorteado para o Gol.
 - **Atribuição dos Goleiros**: Se forem formados 2 ou mais times, o sistema sorteia e atribui aleatoriamente qual goleiro jogará no Time 1 e qual jogará no Time 2.
 
 ### Regras de Formação de Times
